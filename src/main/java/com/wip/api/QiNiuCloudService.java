@@ -1,8 +1,3 @@
-/**
- * Created by IntelliJ IDEA.
- * User: Administrator
- * DateTime: 2018/8/3 22:17
- **/
 package com.wip.api;
 
 import com.google.gson.Gson;
@@ -25,17 +20,17 @@ public class QiNiuCloudService {
     /**
      * 密钥凭证
      */
-    private static final String ACCESS_KEY = "";
-    private static final String SECRET_KEY = "";
+    private static final String ACCESS_KEY = "RdqGQNgTjDI4_C6x_KV4bom8jjRxYosC-RRZcm90";
+    private static final String SECRET_KEY = "eyE98NKQQyrUqI0b-3UeUf6ddn45K-2mjIwTaRL8";
     /**
      * 仓库
      */
-    private static final String BUCKET = "";
+    private static final String BUCKET = "zjq";
 
     /**
      * 七牛外网访问地址
      */
-    public static final String QINIU_UPLOAD_SITE = "";
+    public static final String QINIU_UPLOAD_SITE = "pqlmzaab5.bkt.clouddn.com";
 
     /**
      * 上传文件到七牛公共方法
