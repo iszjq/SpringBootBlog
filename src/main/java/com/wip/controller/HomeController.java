@@ -20,6 +20,7 @@ import com.wip.utils.TaleUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.ApiResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -50,14 +51,14 @@ public class HomeController extends BaseController {
             HttpServletRequest request,
             @ApiParam(name = "page", value = "页数", required = false)
             @RequestParam(name = "page", required = false, defaultValue = "1")
-            int page,
+                    int page,
             @ApiParam(name = "limit", value = "每页数量", required = false)
             @RequestParam(name = "limit", required = false, defaultValue = "5")
-            int limit
+                    int limit
     ) {
         PageInfo<ContentDomain> articles = contentService.getArticlesByCond(new ContentCond(), page, limit);
 
-        request.setAttribute("articles",articles);
+        request.setAttribute("articles", articles);
         return "blog/home";
     }
 
@@ -67,10 +68,10 @@ public class HomeController extends BaseController {
             HttpServletRequest request,
             @ApiParam(name = "page", value = "页数", required = false)
             @RequestParam(name = "page", required = false, defaultValue = "1")
-            int page,
+                    int page,
             @ApiParam(name = "limit", value = "每页数量", required = false)
             @RequestParam(name = "limit", required = false, defaultValue = "10")
-            int limit
+                    int limit
     ) {
         PageInfo<ContentDomain> articles = contentService.getArticlesByCond(new ContentCond(), page, limit);
         request.setAttribute("articles", articles);
@@ -81,7 +82,7 @@ public class HomeController extends BaseController {
     @GetMapping(value = "/categories")
     public String categories(HttpServletRequest request) {
         // 获取分类
-        List<MetaDto> categories = metaService.getMetaList(Types.CATEGORY.getType(),null,WebConst.MAX_POSTS);
+        List<MetaDto> categories = metaService.getMetaList(Types.CATEGORY.getType(), null, WebConst.MAX_POSTS);
         // 分类总数
         Long categoryCount = metaService.getMetasCountByType(Types.CATEGORY.getType());
         request.setAttribute("categories", categories);
@@ -95,9 +96,9 @@ public class HomeController extends BaseController {
             HttpServletRequest request,
             @ApiParam(name = "name", value = "分类名称", required = true)
             @PathVariable("name")
-            String name
+                    String name
     ) {
-        MetaDomain category = metaService.getMetaByName(Types.CATEGORY.getType(),name);
+        MetaDomain category = metaService.getMetaByName(Types.CATEGORY.getType(), name);
         if (null == category.getName())
             throw BusinessException.withErrorCode(ErrorConstant.Common.PARAM_IS_EMPTY);
         List<ContentDomain> articles = contentService.getArticleByCategory(category.getName());
@@ -124,12 +125,12 @@ public class HomeController extends BaseController {
             HttpServletRequest request,
             @ApiParam(name = "name", value = "标签名", required = true)
             @PathVariable("name")
-            String name
+                    String name
     ) {
-        MetaDomain tags = metaService.getMetaByName(Types.TAG.getType(),name);
+        MetaDomain tags = metaService.getMetaByName(Types.TAG.getType(), name);
         List<ContentDomain> articles = contentService.getArticleByTags(tags);
-        request.setAttribute("articles",articles);
-        request.setAttribute("tags",tags.getName());
+        request.setAttribute("articles", articles);
+        request.setAttribute("tags", tags.getName());
         return "blog/tags_detail";
     }
 
@@ -143,14 +144,14 @@ public class HomeController extends BaseController {
     public String detail(
             @ApiParam(name = "cid", value = "文章主键", required = true)
             @PathVariable("cid")
-            Integer cid,
+                    Integer cid,
             HttpServletRequest request
     ) {
         ContentDomain article = contentService.getArticleById(cid);
         request.setAttribute("article", article);
 
         // 更新文章的点击量
-        this.updateArticleHits(article.getCid(),article.getHits());
+        this.updateArticleHits(article.getCid(), article.getHits());
         // 获取评论
         List<CommentDomain> comments = commentService.getCommentsByCId(cid);
         request.setAttribute("comments", comments);
@@ -160,6 +161,7 @@ public class HomeController extends BaseController {
 
     /**
      * 更新文章的点击率
+     *
      * @param cid
      * @param chits
      */
@@ -191,10 +193,10 @@ public class HomeController extends BaseController {
                                @RequestParam(name = "url", required = false) String url,
                                @RequestParam(name = "content", required = true) String content,
                                @RequestParam(name = "csrf_token", required = true) String csrf_token
-                               ) {
+    ) {
 
         String ref = request.getHeader("Referer");
-        if (StringUtils.isBlank(ref) || StringUtils.isBlank(csrf_token)){
+        if (StringUtils.isBlank(ref) || StringUtils.isBlank(csrf_token)) {
             return APIResponse.fail("访问失败");
         }
 
@@ -247,13 +249,13 @@ public class HomeController extends BaseController {
 
         try {
             commentService.addComment(comments);
-            cookie("tale_remember_author", URLEncoder.encode(author,"UTF-8"), 7 * 24 * 60 * 60, response);
-            cookie("tale_remember_mail", URLEncoder.encode(email,"UTF-8"), 7 * 24 * 60 * 60, response);
+            cookie("tale_remember_author", URLEncoder.encode(author, "UTF-8"), 7 * 24 * 60 * 60, response);
+            cookie("tale_remember_mail", URLEncoder.encode(email, "UTF-8"), 7 * 24 * 60 * 60, response);
             if (StringUtils.isNotBlank(url)) {
-                cookie("tale_remember_url",URLEncoder.encode(url,"UTF-8"),7 * 24 * 60 * 60, response);
+                cookie("tale_remember_url", URLEncoder.encode(url, "UTF-8"), 7 * 24 * 60 * 60, response);
             }
             // 设置对每个文章1分钟可以评论一次
-            cache.hset(Types.COMMENTS_FREQUENCY.getType(),val,1,60);
+            cache.hset(Types.COMMENTS_FREQUENCY.getType(), val, 1, 60);
 
             return APIResponse.success();
 
@@ -264,7 +266,7 @@ public class HomeController extends BaseController {
     }
 
     private void cookie(String name, String value, int maxAge, HttpServletResponse response) {
-        Cookie cookie = new Cookie(name,value);
+        Cookie cookie = new Cookie(name, value);
         cookie.setMaxAge(maxAge);
         cookie.setSecure(false);
         response.addCookie(cookie);
